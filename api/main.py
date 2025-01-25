@@ -42,5 +42,4 @@ def delete_unverified_users():
         print(users_to_delete)
         return users_to_delete
     except Exception as e:
-        print(e)
-        raise HTTPException(status_code=500, detail= e)
+        return str(e)
