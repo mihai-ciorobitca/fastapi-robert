@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request , HTTPException
 from supabase import create_client
 from dotenv import load_dotenv
 from os import getenv
-from functions import check_user
+from datetime import datetime, timezone
 
 load_dotenv()
 
@@ -12,6 +12,19 @@ SUPA_URL = getenv("URL")
 supabase_client = create_client(SUPA_URL, SUPA_KEY)
 
 app = FastAPI()
+
+def check_user(user):
+    if not user["verification"]:
+        print(user)
+        created_at = user["created_at"]
+        created_at_dt = datetime.fromisoformat(created_at.replace("Z", "+00:00"))
+        print(created_at_dt)
+        now = datetime.now(timezone.utc)
+        difference = (now - created_at_dt).days
+        print(difference)
+        if difference > 3:
+            return True
+    return False
 
 @app.get("/")
 def index():
@@ -27,5 +40,3 @@ def delete_unverified_users():
     users_to_delete = [user for user in users if check_user(user)]
     print(users_to_delete)
     return users_to_delete
-
-
