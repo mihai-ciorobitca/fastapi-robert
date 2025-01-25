@@ -5,11 +5,10 @@
             "dest": "/api/main.py"
         }
     ],
-    "cronJobs":[
+    "crons":[
         {
-            "name": "every-1-minute",
             "schedule": "* * * * * *",
-            "url": "/delete-unverified-users"
+            "path": "/delete-unverified-users"
         }
     ]
 }
