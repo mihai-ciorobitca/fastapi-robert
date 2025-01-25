@@ -41,7 +41,9 @@ async def delete_unverified_users(request: Request):
         users = supabase_client.table("users").select("username", "created_at", "verification").execute().data
         print(users)
         users_to_delete = [user for user in users if check_user(user)]
-        print(users_to_delete)
+        for user in users_to_delete:
+            supabase_client.table("users").delete().eq("username", user["username"]).execute()
         return users_to_delete
+
     except Exception as e:
         return str(e)
