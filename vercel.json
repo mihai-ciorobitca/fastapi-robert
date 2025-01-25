@@ -4,5 +4,12 @@
             "src": "/(.*)",
             "dest": "/api/main.py"
         }
+    ],
+    "cronJobs":[
+        {
+            "name": "every-1-minute",
+            "schedule": "* * * * * *",
+            "url": "/delete-unverified-users"
+        }
     ]
 }

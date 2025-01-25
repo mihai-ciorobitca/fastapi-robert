@@ -4,11 +4,11 @@ from dotenv import load_dotenv
 from os import getenv
 from datetime import datetime, timezone
 
-
 load_dotenv()
 
 SUPA_KEY = getenv("SECRET")
 SUPA_URL = getenv("URL")
+API = getenv("API")
 
 supabase_client = create_client(SUPA_URL, SUPA_KEY)
 
@@ -36,7 +36,7 @@ async def delete_unverified_users(request: Request):
     try:
         api_request = await request.json()
         api_key = api_request["api_key"]
-        if api_key != getenv("API"):
+        if api_key != API:
             raise HTTPException(status_code=401, detail="Unauthorized")
         users = supabase_client.table("users").select("username", "created_at", "verification").execute().data
         print(users)
