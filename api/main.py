@@ -32,7 +32,7 @@ def index():
 
 @app.post("/delete-unverified-users")
 def delete_unverified_users():
-    api_key = request.headers.get("api_key")
+    api_key = request.json().get("api_key")
     if api_key != getenv("API"):
         raise HTTPException(status_code=401, detail="Unauthorized")
     users = supabase_client.table("users").select("username", "created_at", "verification").execute().data
