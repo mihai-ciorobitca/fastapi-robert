@@ -39,7 +39,7 @@ def index():
 @app.post("/delete-unverified-users")
 async def delete_unverified_users(request: Request):
     try:
-        api_request = await request.json()
+        api_request = await request.headers.get("api_key")
         logger.info(f"API Request: {api_request}")
         api_key = api_request["api_key"]
         if api_key != API:
