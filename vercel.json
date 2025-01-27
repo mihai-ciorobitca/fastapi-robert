@@ -7,7 +7,7 @@
     ],
     "crons":[
         {
-            "schedule": "* * * * * *",
+            "schedule": "* * * * *",
             "path": "/delete-unverified-users"
         }
     ]
