@@ -1,8 +1,9 @@
-from fastapi import FastAPI, Request , HTTPException
+from fastapi import FastAPI, Request, HTTPException
 from supabase import create_client
 from dotenv import load_dotenv
 from os import getenv
 from datetime import datetime, timezone
+import logging
 
 load_dotenv()
 
@@ -14,15 +15,19 @@ supabase_client = create_client(SUPA_URL, SUPA_KEY)
 
 app = FastAPI()
 
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 def check_user(user):
     if not user["verification"]:
-        print(user)
+        logger.info(f"Checking user: {user}")
         created_at = user["created_at"]
         created_at_dt = datetime.fromisoformat(created_at.replace("Z", "+00:00"))
-        print(created_at_dt)
+        logger.info(f"User created at: {created_at_dt}")
         now = datetime.now(timezone.utc)
         difference = (now - created_at_dt).days
-        print(difference)
+        logger.info(f"Difference in days: {difference}")
         if difference > 3:
             return True
     return False
@@ -34,16 +39,20 @@ def index():
 @app.post("/delete-unverified-users")
 async def delete_unverified_users(request: Request):
     try:
+        logger.info("Request received", request.json())
+        logger.info("Checking API key", request.body())
         api_request = await request.json()
         api_key = api_request["api_key"]
         if api_key != API:
             raise HTTPException(status_code=401, detail="Unauthorized")
         users = supabase_client.table("users").select("username", "created_at", "verification").execute().data
-        print(users)
+        logger.info(f"Users fetched: {users}")
         users_to_delete = [user for user in users if check_user(user)]
         for user in users_to_delete:
             supabase_client.table("users").delete().eq("username", user["username"]).execute()
+            logger.info(f"Deleted user: {user['username']}")
         return users_to_delete
 
     except Exception as e:
+        logger.error(f"Error occurred: {e}")
         return str(e)
