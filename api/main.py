@@ -39,9 +39,9 @@ def index():
 @app.post("/delete-unverified-users")
 async def delete_unverified_users(request: Request):
     try:
-        api_request = await request.json()
-        api_key = api_request["api_key"]
-        if api_key != API:
+        headers = request.headers
+        api_key = headers.get("Authorization")
+        if api_key != f"ApiKey {API}":
             raise HTTPException(status_code=401, detail="Unauthorized")
         users = supabase_client.table("users").select("username", "created_at", "verification").execute().data
         logger.info(f"Users fetched: {users}")
